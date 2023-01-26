@@ -129,12 +129,9 @@ public class main {
                         }
                     }
                 }
-                if (table[closestValueX][closestValueY] == -1) {
-                    table[i][j] = -11;
-                }
-                if (table[closestValueX][closestValueY] == -2) {
-                    table[i][j] = -22;
-                }
+                table[i][j] = table[closestValueX][closestValueY] != -1 || table[closestValueX][closestValueY] == -2
+                        ? -22
+                        : -11;
             }
         }
     }
