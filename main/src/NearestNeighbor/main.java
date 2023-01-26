@@ -16,7 +16,7 @@ public class main {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
-    public static int TABLE_SIZE = 10;
+    public static int table_size = 20;
     public static final int NUM_RANGE = 100;
     public static int[][] table = generateRandomTable();
 
@@ -42,7 +42,7 @@ public class main {
                     while (true) {
                         System.out.print("Enter table size: ");
                         if (sc.hasNextInt()) {
-                            TABLE_SIZE = sc.nextInt();
+                            table_size = sc.nextInt();
                             break;
                         } else {
                             System.out.println("Invalid input. Please enter a number: ");
@@ -52,16 +52,16 @@ public class main {
                     break;
                 case "2":
                     table = generateRandomTable();
-                    printtable(table);
+                    printTable(table);
                     break;
                 case "3":
                     updatetableWithNearestNeighbor(table);
-                    printtable(table);
+                    printTable(table);
                     break;
                 case "4":
                     table = generateRandomTable();
                     updatetableWithNearestNeighbor(table);
-                    printtable(table);
+                    printTable(table);
                     break;
                 case "0":
                     System.out.println("Program exit.");
@@ -77,23 +77,28 @@ public class main {
     }
 
     private static int[][] generateRandomTable() {
-        int[][] table = new int[TABLE_SIZE][TABLE_SIZE];
+        int[][] table = new int[table_size][table_size];
         Random rand = new Random();
 
+        // initialize values array2D
         for (int i = 0; i < table.length; i++) {
             for (int j = 0; j < table.length; j++) {
                 table[i][j] = ' ';
             }
         }
+
+        // random values -1 6 each & -2 6 each in array2D
         for (int i = 0; i < 12; i++) {
-            int x = rand.nextInt(TABLE_SIZE);
-            int y = rand.nextInt(TABLE_SIZE);
+            int x = rand.nextInt(table_size);
+            int y = rand.nextInt(table_size);
             while (table[x][y] != ' ') {
-                x = rand.nextInt(TABLE_SIZE);
-                y = rand.nextInt(TABLE_SIZE);
+                x = rand.nextInt(table_size);
+                y = rand.nextInt(table_size);
             }
             table[x][y] = (i < 6) ? -1 : -2;
         }
+
+        // add number 0-99 in array2D
         for (int i = 0; i < table.length; i++) {
             for (int j = 0; j < table.length; j++) {
                 if (table[i][j] == ' ') {
@@ -105,18 +110,17 @@ public class main {
     }
 
     private static void updatetableWithNearestNeighbor(int[][] table) {
-        for (int i = 0; i < TABLE_SIZE; i++) {
-            for (int j = 0; j < TABLE_SIZE; j++) {
+        for (int i = 0; i < table_size; i++) {
+            for (int j = 0; j < table_size; j++) {
                 if (table[i][j] == -1 || table[i][j] == -2)
                     continue;
-                int closestValue = 100;
+                int closestValue = Integer.MAX_VALUE;
                 int closestValueX = 0;
                 int closestValueY = 0;
-                for (int x = 0; x < TABLE_SIZE; x++) {
-                    for (int y = 0; y < TABLE_SIZE; y++) {
+                for (int x = 0; x < table_size; x++) {
+                    for (int y = 0; y < table_size; y++) {
                         if (table[x][y] == -1 || table[x][y] == -2) {
                             int distance = (int) Math.sqrt(Math.pow(i - x, 2) + Math.pow(j - y, 2));
-                            System.out.print(distance+"  \n");
                             if (distance < closestValue) {
                                 closestValue = distance;
                                 closestValueX = x;
@@ -135,12 +139,12 @@ public class main {
         }
     }
 
-    private static void printtable(int[][] table) {
+    private static void printTable(int[][] table) {
         String horizontalLine = "";
-        for (int i = 0; i < TABLE_SIZE; i++) {
+        for (int i = 0; i < table_size; i++) {
             if (i == 0) {
                 horizontalLine += "----";
-            } else if (i == TABLE_SIZE - 1) {
+            } else if (i == table_size - 1) {
                 horizontalLine += "+----";
             } else {
                 horizontalLine += "+---";
