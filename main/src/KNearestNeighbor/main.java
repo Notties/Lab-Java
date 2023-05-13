@@ -1,5 +1,6 @@
-package NearestNeighbor;
+package KNearestNeighbor;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -18,6 +19,7 @@ public class main {
   public static final String ANSI_WHITE = "\u001B[37m";
 
   public static int table_size = 20;
+  public static int Key = 7;
   public static final int NUM_RANGE = 100;
   public static int[][] table = generateRandomTable();
 
@@ -30,11 +32,11 @@ public class main {
     String number;
     do {
       System.out.print(
-        "================= Nearest Neighbor =================\n" +
-        "1. Input table size(Optional)\n" +
+        "================= K-Nearest Neighbor =================\n" +
+        "1. Input table size & K value(Optional)\n" +
         "2. Generate random table\n" +
-        "3. Show table with NearestNeighbor\n" +
-        "4. Generate random & show table NearestNeighbor\n" +
+        "3. Show table with K-NearestNeighbor\n" +
+        "4. Generate random & show table K-NearestNeighbor\n" +
         "0. Exit program\n" +
         "====================================================\n" +
         "Please Select menu: "
@@ -52,18 +54,28 @@ public class main {
               sc.next();
             }
           }
+          while (true) {
+            System.out.print("Enter K value: ");
+            if (sc.hasNextInt()) {
+              Key = sc.nextInt();
+              break;
+            } else {
+              System.out.println("Invalid input. Please enter a number: ");
+              sc.next();
+            }
+          }
           break;
         case "2":
           table = generateRandomTable();
           printTable(table);
           break;
         case "3":
-          updatetableWithNearestNeighbor(table);
+          updatetableWithKNearestNeighbor(table, Key);
           printTable(table);
           break;
         case "4":
           table = generateRandomTable();
-          updatetableWithNearestNeighbor(table);
+          updatetableWithKNearestNeighbor(table, Key);
           printTable(table);
           break;
         case "0":
@@ -114,35 +126,48 @@ public class main {
     return table;
   }
 
-  private static void updatetableWithNearestNeighbor(int[][] table) {
+  private static void updatetableWithKNearestNeighbor(int[][] table, int k) {
     for (int i = 0; i < table_size; i++) {
-      for (int j = 0; j < table_size; j++) {
-        if (table[i][j] == -1 || table[i][j] == -2) continue;
-        int closestValue = Integer.MAX_VALUE;
-        int closestValueX = 0;
-        int closestValueY = 0;
-        for (int x = 0; x < table_size; x++) {
-          for (int y = 0; y < table_size; y++) {
-            if (table[x][y] == -1 || table[x][y] == -2) {
-              int distance = (int) Math.sqrt(
-                Math.pow(i - x, 2) + Math.pow(j - y, 2)
-              );
-              if (distance < closestValue) {
-                closestValue = distance;
-                closestValueX = x;
-                closestValueY = y;
-              }
+        for (int j = 0; j < table_size; j++) {
+            if (table[i][j] == -1 || table[i][j] == -2) continue;
+            int[] closestValues = new int[k];
+            int[] closestValuesX = new int[k];
+            int[] closestValuesY = new int[k];
+            Arrays.fill(closestValues, Integer.MAX_VALUE);
+            for (int x = 0; x < table_size; x++) {
+                for (int y = 0; y < table_size; y++) {
+                    if (table[x][y] == -1 || table[x][y] == -2) {
+                        int distance = (int) Math.sqrt(Math.pow(i - x, 2) + Math.pow(j - y, 2));
+                        for (int n = 0; n < k; n++) {
+                            if (distance < closestValues[n]) {
+                                for (int m = k - 1; m > n; m--) {
+                                    closestValues[m] = closestValues[m - 1];
+                                    closestValuesX[m] = closestValuesX[m - 1];
+                                    closestValuesY[m] = closestValuesY[m - 1];
+                                }
+                                closestValues[n] = distance;
+                                closestValuesX[n] = x;
+                                closestValuesY[n] = y;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
-          }
+            int countNeg1 = 0;
+            int countNeg2 = 0;
+            for (int n = 0; n < k; n++) {
+                if (table[closestValuesX[n]][closestValuesY[n]] == -1) {
+                    countNeg1++;
+                } else if (table[closestValuesX[n]][closestValuesY[n]] == -2) {
+                    countNeg2++;
+                }
+            }
+            table[i][j] = countNeg1 > countNeg2 ? -11 : -22;
         }
-        table[i][j] =
-          table[closestValueX][closestValueY] != -1 ||
-            table[closestValueX][closestValueY] == -2
-            ? -22
-            : -11;
-      }
     }
-  }
+}
+
 
   private static void printTable(int[][] table) {
     String horizontalLine = "";
